@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  lat: 1.5
+  lon: 1.5
+  altitude: 1.5
+  direction: 9.99
+  params: MyText
+
+two:
+  title: MyString
+  lat: 1.5
+  lon: 1.5
+  altitude: 1.5
+  direction: 9.99
+  params: MyText
