@@ -48,3 +48,24 @@
   
   setInterval(setPoints, 5000);
 </script>
+
+<table>
+  <thead>
+    <tr>
+      <td>title</td>
+      <td>lat</td>
+      <td>lon</td>
+      <td>options</td>
+    </tr>
+  </thead>
+  <tbody>
+    <% @points.each do |point| %>
+      <tr>
+        <td><%= point.title %></td>
+        <td><%= point.lat %></td>
+        <td><%= point.lon %></td>
+        <td><%= link_to 'Delete', point_path(point), method: :delete %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
