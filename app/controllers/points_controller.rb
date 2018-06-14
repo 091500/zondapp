@@ -17,6 +17,12 @@ class PointsController < ApplicationController
     render body: nil
   end
   
+  def destroy
+    Point.destroy(params[:id])
+    
+    redirect_to points_path
+  end
+  
   def json
     render json: prepare_points_for_google(Point.all.to_a)
   end
