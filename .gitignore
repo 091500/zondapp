@@ -26,5 +26,5 @@
 /config/master.key
 
 .idea
-.zondapp_development
-.zondapp_test
+zondapp_development
+zondapp_test

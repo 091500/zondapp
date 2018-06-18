@@ -13,8 +13,7 @@ class PointsController < ApplicationController
   end
   
   def create
-    point = Point.create(permit_params(params))
-    point.save!
+    Point.create(permit_params(params)).save
     
     redirect_to points_path
   end
@@ -28,8 +27,7 @@ class PointsController < ApplicationController
   end
   
   def webhook_create
-    point = Point.create(permit_webhook_params(params))
-    point.save!
+    Point.create(permit_webhook_params(params)).save
     
     render body: nil
   end
@@ -52,7 +50,7 @@ class PointsController < ApplicationController
   private
   
   def get_titles
-    @titles = Point.all.pluck(:title).uniq.to_a
+    @titles = Point.all.order(id: :desc).pluck(:title).uniq.to_a
   end
   
   def prepare_points_for_google(points)
