@@ -1,0 +1,125 @@
+<div id="map"></div>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=<%= Rails.application.config.google_api_key %>&callback=initMap">
+</script>
+<script>
+  var myLatLng = {lat: 53.961414000000005, lng: 27.622927999999998};
+  var addedPoints = [];
+  var map;
+  var infoWindow;
+
+  function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+  }
+
+  function rgbToHex(r, g, b) {
+    return "" + 
+      componentToHex((r > 0 && r < 256) ? r : 0) + 
+      componentToHex((g > 0 && g < 256) ? g : 0) + 
+      componentToHex((b > 0 && b < 256) ? b : 0);
+  }
+
+  // alert( rgbToHex(0, 51, 255) ); // #0033ff
+  
+  function getInfoContent(point) {
+    return '<div id="content">'+
+      '<strong>' + point.title + '</strong>'+
+      '<table>' +
+        '<tr>' +
+          '<td>id:</td>' +
+          '<td>' + point.id + '</td>' +
+        '</tr>' +
+        '<tr>' +
+          '<td>lat:</td>' +
+          '<td>' + point.lat + '</td>' +
+        '</tr>' +
+        '<tr>' +
+          '<td>lng:</td>' +
+          '<td>' + point.lng + '</td>' +
+        '</tr>' +
+        '<tr>' +
+          '<td>alt:</td>' +
+          '<td>' + point.altitude + '</td>' +
+        '</tr>' +
+        '<tr>' +
+          '<td>dir:</td>' +
+          '<td>' + point.direction+ '</td>' +
+        '</tr>' +
+      '</table>' +
+    '</div>';
+  }
+
+  function initMap() {
+    map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 14,
+      center: myLatLng,
+      scrollwheel: true
+    });
+  
+    infoWindow = new google.maps.InfoWindow({
+      maxWidth: 200
+    });
+  }
+
+  $(document).ready(function() {
+    console.log('test');
+  });
+
+  function setPoints() {
+    console.log('set points');
+    
+    var title = $('#title').val();
+    
+    $.ajax({
+      url: 'json' + (title ? '?title=' + title : ''),
+      dataType: 'json',
+      context: document.body
+    }).done(function(result) {
+      // console.log(result);
+      
+      var points = {};
+      if (result.points) {
+        points = result.points;
+      }
+  
+      points.forEach(function(point) {
+        // console.log('point', point);
+        
+        console.log(addedPoints.indexOf(point.id));
+        if (addedPoints.indexOf(point.id) === -1) {
+          addedPoints.push(point.id);
+  
+          var pinColor = rgbToHex(255, 255-addedPoints.length, 255-addedPoints.length);
+  
+          // console.log('' + pinColor);
+          var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
+            new google.maps.Size(21, 34),
+            new google.maps.Point(0,0),
+            new google.maps.Point(10, 34));
+          var pinShadow = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_shadow",
+            new google.maps.Size(40, 37),
+            new google.maps.Point(0, 0),
+            new google.maps.Point(12, 35));
+          
+          var marker = new google.maps.Marker({
+            position: point,
+            map: map,
+            title: point.title,
+            icon: pinImage,
+            shadow: pinShadow            
+          });
+  
+          google.maps.event.addListener(marker, 'click', (function(marker) {
+            return function() {
+              infoWindow.setContent(getInfoContent(point));
+              infoWindow.open(map, marker);
+            }
+          }) (marker));          
+        }
+      });      
+    });
+  }
+  
+  setInterval(setPoints, 5000);
+</script>
